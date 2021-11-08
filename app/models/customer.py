@@ -3,10 +3,10 @@ import datetime
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable = False)
-    postal_code = db.Column(db.String)
-    phone_number = db.Column(db.String)
-    registered_at = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.datetime.utcnow())
+    name = db.Column(db.String, nullable=False)
+    postal_code = db.Column(db.Integer, nullable=False)
+    phone_number = db.Column(db.String, nullable=False)
+    registered_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def to_dict(self):
         return {
