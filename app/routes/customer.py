@@ -5,21 +5,9 @@ from flask import Blueprint, jsonify, request, make_response, abort
 from tests.test_wave_01 import CUSTOMER_ID
 
 # Customers
-
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 
 # Helper Functions
-# def valid_customer(customer_id):
-#     try:
-#         int(customer_id)
-#     except:
-#         abort(make_response({"error": "customer_id must be an int"}, 400))
-
-# def get_customer_from_id(customer_id):
-    # valid_customer(customer_id)
-    # selected_customer = Customer.query.get_or_404(customer_id, description=f"Customer {customer_id} was not found")
-    # return selected_customer
-
 def valid_int(number):
     try:
         id = int(number)
@@ -35,21 +23,23 @@ def get_customer_from_id(customer_id):
         abort(make_response(response_body, 404))   
     return customer
 
-# Routes
+# # Routes
+# Get all
 @customers_bp.route("", methods=["GET"], strict_slashes=False)
 def get_all_customers():
-    customer_objects = Customer.query.all() # returning list of objects
+    customer_objects = Customer.query.all()
     response_list = []
     for customer in customer_objects:
         response_list.append(customer.to_dict())
     return make_response(jsonify(response_list), 200)
 
+# Get one
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_customer(customer_id):
     selected_customer = get_customer_from_id(customer_id)
-    # return make_response({"customer": selected_customer.to_dict()}, 200)
     return make_response(selected_customer.to_dict(), 200)
 
+# Add customer
 @customers_bp.route("", methods=["POST"], strict_slashes=False)
 def add_customer():
     request_body = request.get_json()
@@ -72,6 +62,7 @@ def add_customer():
     response = make_response(new_customer.to_dict(), 201)
     return response
 
+# Delete customer
 @customers_bp.route("/<customer_id>", methods=["DELETE"])
 def delete_customer(customer_id):
     selected_customer = get_customer_from_id(customer_id)
@@ -79,6 +70,7 @@ def delete_customer(customer_id):
     db.session.commit()
     return make_response({"id": int(customer_id)}, 200)
 
+# Update customer
 @customers_bp.route("/<customer_id>", methods=["PUT"])
 def update_customer(customer_id):
     selected_customer = get_customer_from_id(customer_id)
