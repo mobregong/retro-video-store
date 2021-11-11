@@ -1,4 +1,3 @@
-import re
 from app import db
 from app.models.video import Video
 from datetime import datetime
@@ -6,6 +5,7 @@ from flask import Blueprint, jsonify, make_response, request, abort
 
 
 video_bp = Blueprint('video', __name__, url_prefix='/videos')
+
 
 
 ''' Post - create a new video'''
@@ -61,9 +61,11 @@ def read_all():
 @video_bp.route("/<video_id>", methods=["GET"])
 def read_one_video(video_id):
     video = get_video_by_id(video_id)
-
+    
     try:
         response_body = video.to_json()
+        # count_id = Video.query.filter_by(release_date=video.release_date).count()
+        # response_body = {'answer': count_id}
         return make_response(jsonify(response_body),200)
     except:
         abort(400)
@@ -112,7 +114,6 @@ def delete_video(video_id):
 
 
 
-
 ''' Helper Functions '''
 
 def get_video_by_id(video_id):
@@ -129,12 +130,6 @@ def valid_int(number):
         return id 
     except:
         abort(400)
-
-
-
-
-
-
 
 '''Error Handlers'''
 

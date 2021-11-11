@@ -13,3 +13,5 @@ class Video(db.Model):
             "release_date": self.release_date,
             "total_inventory" :  self.total_inventory
         }
+
+
