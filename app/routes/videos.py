@@ -1,6 +1,9 @@
 import re
 from app import db
 from app.models.video import Video
+from app.models.customer import Customer
+from app.models.rental import Rental 
+from app.routes.customers import get_customer_from_id
 from datetime import datetime
 from flask import Blueprint, jsonify, make_response, request, abort
 
@@ -13,21 +16,11 @@ video_bp = Blueprint('video', __name__, url_prefix='/videos')
 def add_video():
     request_body = request.get_json() 
 
-    try:
-        if "title" not in request_body:
-            response_body = {"details": 'Request body must include title.'}
-            return make_response(response_body, 400)
-        elif "release_date" not in request_body:
-            response_body = {"details": 'Request body must include release_date.'}
-            return make_response(response_body, 400)
-        elif  "total_inventory" not in request_body:
-            response_body = {"details": "Request body must include total_inventory."}
-            return make_response(response_body, 400)
-        
+    try:   
         new_video = Video(title = request_body["title"], 
                         release_date = request_body["release_date"],
                         total_inventory = request_body["total_inventory"])
-        #! add it to db and commit it 
+
         db.session.add(new_video)
         db.session.commit()
 
@@ -37,9 +30,9 @@ def add_video():
                         "total_inventory": new_video.total_inventory}
 
         return make_response(jsonify(response_body),201)
-    except Exception:
-        abort(400)
-
+    except KeyError as err:
+        response_body = {"details": f"Request body must include {err.args[0]}."}
+        return make_response(response_body, 400) 
 
 '''Get - real all videos'''
 @video_bp.route("", methods=["GET"])
@@ -76,20 +69,19 @@ def update_video(video_id):
     video = get_video_by_id(video_id)
 
     try:
-        request_body = request.get_json()
-        if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
-            abort(400)
+        request_body = request.get_json()      
         if "title" in request_body:
             video.title = request_body["title"]
         if "release_date" in request_body:
             video.release_date = request_body["release_date"]
         if "total_inventory" in request_body:
             video.total_inventory = request_body["total_inventory"]
-        # commit uppdates
+
         db.session.commit()
         response_body = video.to_json()
+
         return make_response(response_body, 200)
-    except:
+    except KeyError as err:
         abort(400)
 
 
@@ -98,7 +90,6 @@ def update_video(video_id):
 def delete_video(video_id): 
     video = get_video_by_id(video_id)
     try:
-        # delete entity and commit it
         
         db.session.delete(video)
         db.session.commit()
@@ -110,6 +101,64 @@ def delete_video(video_id):
     except Exception:
         abort(422)
 
+'''```
+#### Errors and Edge Cases to Check
+- The API should return back detailed errors and a status `404: Not Found` if the customer does not exist
+- The API should return an empty list if the customer does not have any videos checked out.
+
+## `GET /videos/<id>/rentals`
+
+List the customers who _currently_ have the video checked out
+
+#### Required Arguments
+
+Arg | Type | Details
+--- | --- | ---
+`id` | integer | The id of the video
+
+#### Response
+
+Typical success response is a list of customers with the due date:
+
+Status: `200`
+
+```json
+[
+    {
+        "due_date": "Thu, 13 May 2021 21:36:38 GMT",
+        "name": "Edith Wong",
+        "phone": "(555) 555-5555",
+        "postal_code": "99999",
+    },
+    {
+        "due_date": "Thu, 13 May 2021 21:36:47 GMT",
+        "name": "Ricarda Mowery",
+        "phone": "(555) 555-5555",
+        "postal_code": "99999",
+    }
+]
+
+```
+#### Errors and Edge Cases to Check
+- The API should return back detailed errors and a status `404: Not Found` if the video does not exist
+- The API should return an empty list if the video is not checked out to any customers.
+'''
+
+@video_bp.route("/<id>/rentals", methods=["GET"])
+def handle_video_rental(id):
+
+    if get_video_by_id(id):
+        rentals  = Rental.query.filter_by(video_id=id).all()
+
+    response_body = []
+    for rental in rentals:
+        customer =  get_customer_from_id(rental.customer_id)
+        response_body.append({"due_date": rental.due_date,
+                            "name": customer.name,
+                            "phone": customer.phone,
+                            "postal_code":customer.postal_code})
+
+    return make_response(jsonify(response_body),200)
 
 
 
@@ -118,6 +167,7 @@ def delete_video(video_id):
 def get_video_by_id(video_id):
     id = valid_int(video_id)
     video = Video.query.filter_by(id=id).one_or_none()    
+
     if video is None:
         response_body = {"message": f"Video {id} was not found"}
         abort(make_response(response_body, 404))   
@@ -129,9 +179,6 @@ def valid_int(number):
         return id 
     except:
         abort(400)
-
-
-
 
 
 
