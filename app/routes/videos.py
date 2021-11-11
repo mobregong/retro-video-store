@@ -62,7 +62,7 @@ def read_one_video(video_id):
         abort(400)
 
 
-''' PUT'''
+''' PUT- update whole video row'''
 
 @video_bp.route("/<video_id>", methods=["PUT"])
 def update_video(video_id): 
@@ -85,15 +85,19 @@ def update_video(video_id):
         abort(400)
 
 
-'''DELETE'''
+'''DELETE - one item by id'''
 @video_bp.route("/<video_id>", methods=["DELETE"])
 def delete_video(video_id): 
     video = get_video_by_id(video_id)
+    rentals = Rental.query.filter_by(video_id=video_id).all()
+
     try:
-        
+        if rentals != None:
+            for rental in rentals:
+                db.session.delete(rental)
+                db.session.commit()
         db.session.delete(video)
         db.session.commit()
-
         response_body ={"id": video.id}
 
         return make_response(response_body), 200
@@ -101,48 +105,7 @@ def delete_video(video_id):
     except Exception:
         abort(422)
 
-'''```
-#### Errors and Edge Cases to Check
-- The API should return back detailed errors and a status `404: Not Found` if the customer does not exist
-- The API should return an empty list if the customer does not have any videos checked out.
 
-## `GET /videos/<id>/rentals`
-
-List the customers who _currently_ have the video checked out
-
-#### Required Arguments
-
-Arg | Type | Details
---- | --- | ---
-`id` | integer | The id of the video
-
-#### Response
-
-Typical success response is a list of customers with the due date:
-
-Status: `200`
-
-```json
-[
-    {
-        "due_date": "Thu, 13 May 2021 21:36:38 GMT",
-        "name": "Edith Wong",
-        "phone": "(555) 555-5555",
-        "postal_code": "99999",
-    },
-    {
-        "due_date": "Thu, 13 May 2021 21:36:47 GMT",
-        "name": "Ricarda Mowery",
-        "phone": "(555) 555-5555",
-        "postal_code": "99999",
-    }
-]
-
-```
-#### Errors and Edge Cases to Check
-- The API should return back detailed errors and a status `404: Not Found` if the video does not exist
-- The API should return an empty list if the video is not checked out to any customers.
-'''
 
 @video_bp.route("/<id>/rentals", methods=["GET"])
 def handle_video_rental(id):
