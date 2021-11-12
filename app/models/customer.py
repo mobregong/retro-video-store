@@ -7,6 +7,8 @@ class Customer(db.Model):
     postal_code = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
     registered_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
+    
+
 
     def to_dict(self):
         return {
