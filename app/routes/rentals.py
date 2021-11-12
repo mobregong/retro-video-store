@@ -52,30 +52,26 @@ def check_out_video():
 def check_in_video():
 
     request_body = request.get_json()
-    # print(request_body)
     error_message = {"message": "Could not perform check in"}, 400
 
     if "customer_id" not in request_body or "video_id" not in request_body:
         return make_response(error_message)
 
     customer = get_customer_from_id(request_body['customer_id'])
-
-    
-
     video =  get_video_by_id(request_body['video_id'])
-
-
-    # rental  = Rental.query.filter_by(video_id=video.id , customer_id=customer.id)
-
-
     rentals = Rental.query.filter_by(video_id=video.id).all()
 
+    rental_obj = None
+    # create a helper function to declutter 
     for rental in rentals:
         if rental.customer_id == customer.id:
             rental_obj = rental
-    print(rental_obj)
+    if not rental_obj:
+        return make_response({"message": "No outstanding rentals for customer 1 and video 1"},400)
 
+# video was not checked in yet 
     if not rental_obj.checked_in:
+        # update available_inventory and checked ou count
         available_inventory = rental.available_inventory + 1
         videos_checked_out_count = rental.videos_checked_out_count - 1
         date = datetime.utcnow()
