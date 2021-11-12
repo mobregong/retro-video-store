@@ -17,19 +17,14 @@ class Rental(db.Model):
 
     def to_dict(self):
 
-        if not self.checked_in:
-            return {
-                "customer_id": self.customer_id,
-                "video_id": self.video_id,
-                "due_date": self.due_date,
-                "available_inventory": self.available_inventory,
-                "videos_checked_out_count": self.videos_checked_out_count
-            }
-        return {
+        dict_rentals = {
                 "customer_id": self.customer_id,
                 "video_id": self.video_id,
                 "due_date": self.due_date,
                 "available_inventory": self.available_inventory,
                 "videos_checked_out_count": self.videos_checked_out_count if self.videos_checked_out_count else False,
-                "checked_in": self.checked_in
             }
+        if not self.checked_in:
+            return dict_rentals     
+        dict_rentals["checked_in"] = self.checked_in
+        return dict_rentals
