@@ -58,26 +58,19 @@ def check_in_video():
 
     customer = get_customer_from_id(request_body['customer_id'])
     video =  get_video_by_id(request_body['video_id'])
-    rentals = Rental.query.filter_by(video_id=video.id).all()
-
-    rental_obj = None
-    # create a helper function to declutter 
-    # is there a sqlalchemy query to filter it by customer_id and video_id
-    for rental in rentals:
-        if rental.customer_id == customer.id:
-            rental_obj = rental
-    if not rental_obj:
-        return make_response({"message": "No outstanding rentals for customer 1 and video 1"},400)
+    rentals = Rental.query.filter_by(video_id=video.id, customer_id=customer.id).one_or_none()
+    if rentals == None:
+        return make_response({"message": "No outstanding rentals for customer 1 and video 1"}, 400)
 
 # video was not checked in yet 
-    if not rental_obj.checked_in:
+    if not rentals.checked_in:
         # update available_inventory and checked ou count
-        rental_obj.due_date = None,
-        rental_obj.available_inventory = rental_obj.available_inventory + 1
-        rental_obj.videos_checked_out_count= rental_obj.videos_checked_out_count - 1
-        rental_obj.checked_in =  datetime.utcnow()
+        rentals.due_date = None,
+        rentals.available_inventory =  rentals.available_inventory + 1
+        rentals.videos_checked_out_count=  rentals.videos_checked_out_count - 1
+        rentals.checked_in =  datetime.utcnow()
 
         db.session.commit() 
 
-    response_body = rental_obj.to_dict()
+    response_body = rentals.to_dict()
     return make_response(response_body, 200)
