@@ -7,7 +7,6 @@ from app.routes.customers import get_customer_from_id
 from app.routes.videos import get_video_by_id, valid_int
 from flask import Blueprint, jsonify, request, make_response, abort
 from datetime import datetime, timedelta
-from tests.test_wave_01 import CUSTOMER_ID
 
 rentals_bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 
@@ -16,7 +15,7 @@ rentals_bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 # Routes
 # Post check-out
 @rentals_bp.route("/check-out", methods=["POST"], strict_slashes=False)
-def create_rental():
+def check_out_video():
     request_body = request.get_json()
     error_message = {"message": "Could not perform checkout"}, 400
 
@@ -46,3 +45,24 @@ def create_rental():
     db.session.commit() 
     response_body = new_rental.to_dict()
     return make_response(response_body, 200)
+
+
+@rentals_bp.route("/check-in", methods=["POST"], strict_slashes=False)
+def check_in_video():
+    request_body = request.get_json()
+    error_message = {"message": "Could not perform check in"}, 400
+
+    if "customer_id" not in request_body or "video_id" not in request_body:
+        return make_response(error_message)
+
+    customer = get_customer_from_id(request_body['customer_id'])
+    video =  get_video_by_id(request_body['video_id'])
+    date = datetime.utcnow()
+    pass 
+
+    # update_rental = Rental(video_id=video.id,
+    #                         customer_id=customer.id,
+    #                         due_date=due_date, 
+    #                         available_inventory=available_inventory,
+    #                         videos_checked_out_count=videos_checked_out_by_customer_count,
+    #                         checked_in = )

@@ -24,7 +24,4 @@ class Rental(db.Model):
                 "available_inventory": self.available_inventory,
                 "videos_checked_out_count": self.videos_checked_out_count if self.videos_checked_out_count else False,
             }
-        if not self.checked_in:
-            return dict_rentals     
-        dict_rentals["checked_in"] = self.checked_in
         return dict_rentals

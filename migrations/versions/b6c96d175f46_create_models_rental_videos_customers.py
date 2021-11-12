@@ -1,8 +1,8 @@
-"""empty message
+"""Create Models Rental, VIDEOS , CUSTOMERS
 
-Revision ID: bc69b3e9aa94
+Revision ID: b6c96d175f46
 Revises: 
-Create Date: 2021-11-10 17:34:23.508262
+Create Date: 2021-11-12 11:10:25.113817
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bc69b3e9aa94'
+revision = 'b6c96d175f46'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,7 +38,8 @@ def upgrade():
     sa.Column('video_id', sa.Integer(), nullable=False),
     sa.Column('due_date', sa.DateTime(timezone=True), nullable=False),
     sa.Column('available_inventory', sa.Integer(), nullable=False),
-    sa.Column('videos_checked_out_count', sa.Integer(), nullable=False),
+    sa.Column('videos_checked_out_count', sa.Integer(), nullable=True),
+    sa.Column('checked_in', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['customer_id'], ['customer.id'], ),
     sa.ForeignKeyConstraint(['video_id'], ['video.id'], ),
     sa.PrimaryKeyConstraint('customer_id', 'video_id')
