@@ -52,10 +52,9 @@ def check_out_video():
 def check_in_video():
 
     request_body = request.get_json()
-    error_message = {"message": "Could not perform check in"}, 400
 
     if "customer_id" not in request_body or "video_id" not in request_body:
-        return make_response(error_message)
+        return make_response({"message": "Could not perform check in"}, 400)
 
     customer = get_customer_from_id(request_body['customer_id'])
     video =  get_video_by_id(request_body['video_id'])
@@ -63,6 +62,7 @@ def check_in_video():
 
     rental_obj = None
     # create a helper function to declutter 
+    # is there a sqlalchemy query to filter it by customer_id and video_id
     for rental in rentals:
         if rental.customer_id == customer.id:
             rental_obj = rental
@@ -72,19 +72,12 @@ def check_in_video():
 # video was not checked in yet 
     if not rental_obj.checked_in:
         # update available_inventory and checked ou count
-        available_inventory = rental.available_inventory + 1
-        videos_checked_out_count = rental.videos_checked_out_count - 1
-        date = datetime.utcnow()
-
-        update_rental = Rental(video_id=video.id,
-                            customer_id=customer.id,
-                            due_date= None, 
-                            available_inventory=available_inventory,
-                            videos_checked_out_count=videos_checked_out_count,
-                            checked_in = date)
-
+        rental_obj.due_date = None,
+        rental_obj.available_inventory = rental_obj.available_inventory + 1
+        rental_obj.videos_checked_out_count= rental_obj.videos_checked_out_count - 1
+        rental_obj.checked_in =  datetime.utcnow()
 
         db.session.commit() 
 
-    response_body = update_rental.to_dict()
+    response_body = rental_obj.to_dict()
     return make_response(response_body, 200)
