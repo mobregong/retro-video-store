@@ -53,7 +53,7 @@ def read_all():
 @video_bp.route("/<video_id>", methods=["GET"])
 def read_one_video(video_id):
     video = get_video_by_id(video_id)
-
+    
     try:
         response_body = video.to_json()
         print(response_body)
@@ -69,7 +69,9 @@ def update_video(video_id):
     video = get_video_by_id(video_id)
 
     try:
-        request_body = request.get_json()      
+        request_body = request.get_json()
+        if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
+            abort(400)      
         if "title" in request_body:
             video.title = request_body["title"]
         if "release_date" in request_body:
@@ -108,11 +110,10 @@ def delete_video(video_id):
 
 
 @video_bp.route("/<id>/rentals", methods=["GET"])
-def handle_video_rental(id):
+def get_rentals_by_video_id(id):
 
-    if get_video_by_id(id):
-        rentals  = Rental.query.filter_by(video_id=id).all()
-
+    get_video_by_id(id)
+    rentals  = Rental.query.filter_by(video_id=id).all()
     response_body = []
     for rental in rentals:
         customer =  get_customer_from_id(rental.customer_id)
