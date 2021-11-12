@@ -1,8 +1,10 @@
 from app import db
 from app.models.customer import Customer
 from flask import Blueprint, jsonify, request, make_response, abort
-
-from tests.test_wave_01 import CUSTOMER_ID
+from app.models.rental import Rental
+from app.models.video import Video
+# from app.routes.videos import get_video_by_id
+# from tests.test_wave_01 import CUSTOMER_ID
 
 # Customers
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
@@ -22,6 +24,15 @@ def get_customer_from_id(customer_id):
         response_body = {"message": f"Customer {id} was not found"}
         abort(make_response(response_body, 404))   
     return customer
+
+def get_video_by_id(video_id):
+    id = valid_int(video_id)
+    video = Video.query.filter_by(id=id).one_or_none()    
+
+    if video is None:
+        response_body = {"message": f"Video {id} was not found"}
+        abort(make_response(response_body, 404))   
+    return video
 
 # # Routes
 # Get all
@@ -63,7 +74,7 @@ def add_customer():
     return response
 
 # Delete customer
-@customers_bp.route("/<customer_id>", methods=["DELETE"])
+@customers_bp.route("/<customer_id>", methods=["DELETE"], strict_slashes=False)
 def delete_customer(customer_id):
     selected_customer = get_customer_from_id(customer_id)
     db.session.delete(selected_customer)
@@ -71,7 +82,7 @@ def delete_customer(customer_id):
     return make_response({"id": int(customer_id)}, 200)
 
 # Update customer
-@customers_bp.route("/<customer_id>", methods=["PUT"])
+@customers_bp.route("/<customer_id>", methods=["PUT"], strict_slashes=False)
 def update_customer(customer_id):
     selected_customer = get_customer_from_id(customer_id)
     request_body = request.get_json()
@@ -90,3 +101,16 @@ def update_customer(customer_id):
     db.session.commit()
     response_body = jsonify(selected_customer.to_dict())
     return make_response(response_body, 200)
+
+# Get rentals by customer id
+@customers_bp.route("/<id>/rentals", methods=["GET"], strict_slashes=False)
+def get_rentals_by_customer_id(id):
+    get_customer_from_id(id)
+    rentals = Rental.query.filter_by(customer_id=id).all()
+    response_body = []
+    for rental in rentals:
+        video = get_video_by_id(rental.video_id)
+        response_body.append({"release_date": video.release_date,
+                            "title": video.title,
+                            "due_date": rental.due_date})
+    return make_response(jsonify(response_body), 200)
