@@ -124,6 +124,9 @@ def handle_video_rental(id):
     return make_response(jsonify(response_body),200)
 
 
+
+
+
 ''' Helper Functions '''
 
 def get_video_by_id(video_id):

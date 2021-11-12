@@ -1,4 +1,4 @@
-import re
+import sys
 from app import db
 from app.models.customer import Customer
 from app.models.video import Video
@@ -47,60 +47,48 @@ def check_out_video():
     return make_response(response_body, 200)
 
 
+
 @rentals_bp.route("/check-in", methods=["POST"], strict_slashes=False)
 def check_in_video():
 
     request_body = request.get_json()
+    # print(request_body)
     error_message = {"message": "Could not perform check in"}, 400
 
     if "customer_id" not in request_body or "video_id" not in request_body:
         return make_response(error_message)
 
     customer = get_customer_from_id(request_body['customer_id'])
+
+    
+
     video =  get_video_by_id(request_body['video_id'])
 
 
-    videos_checked_out_by_customer_count = (Rental.query.filter_by(customer_id=customer.id).count())   #Total of vidieos checked ou by customer 
-    videos_id_checked_out_count = (Rental.query.filter_by(video_id=video.id).count())  #total of videos with the same id that were checked out 
-    rental  = Rental.query.filter_by(video_id=video.id)
+    # rental  = Rental.query.filter_by(video_id=video.id , customer_id=customer.id)
 
-    if rental.checked_in == None:
+
+    rentals = Rental.query.filter_by(video_id=video.id).all()
+
+    for rental in rentals:
+        if rental.customer_id == customer.id:
+            rental_obj = rental
+    print(rental_obj)
+
+    if not rental_obj.checked_in:
         available_inventory = rental.available_inventory + 1
+        videos_checked_out_count = rental.videos_checked_out_count - 1
         date = datetime.utcnow()
 
-
-
-    update_rental = Rental(video_id=video.id,
+        update_rental = Rental(video_id=video.id,
                             customer_id=customer.id,
                             due_date= None, 
                             available_inventory=available_inventory,
-                            videos_checked_out_count=videos_checked_out_by_customer_count,
+                            videos_checked_out_count=videos_checked_out_count,
                             checked_in = date)
 
 
-# # {
-# #   "customer_id": 122581016,
-# #   "video_id": 277419103,
-# #   "videos_checked_out_count": 1,
-# #   "available_inventory": 6
-# # }
+        db.session.commit() 
 
-
-
-   
-    
-
-#     videos_checked_out_by_customer_count -= 1
-#     available_inventory += 1
-#     due_date = datetime.utcnow() + timedelta(days=7)
-
-#     new_rental = Rental(video_id=video.id,
-#                         customer_id=customer.id,
-#                         due_date=due_date, 
-#                         available_inventory=available_inventory,
-#                         videos_checked_out_count=videos_checked_out_by_customer_count)
-
-#     db.session.add(new_rental)
-#     db.session.commit() 
-#     response_body = new_rental.to_dict()
-#     return make_response(response_body, 200)
+    response_body = update_rental.to_dict()
+    return make_response(response_body, 200)
