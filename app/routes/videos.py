@@ -1,4 +1,3 @@
-import re
 from app import db
 from app.models.video import Video
 from app.models.customer import Customer
@@ -23,7 +22,6 @@ def add_video():
 
         db.session.add(new_video)
         db.session.commit()
-
         response_body = {"title": new_video.title,
                         "id": new_video.id,
                         "release_date": new_video.release_date,
@@ -39,11 +37,12 @@ def add_video():
 def read_all():
     videos = Video.query.all()
 
+
     try:
         response_body = []
         for video in videos:
             response_body.append(video.to_json())
-
+        
         return make_response(jsonify(response_body),200)
 
     except:
@@ -57,6 +56,7 @@ def read_one_video(video_id):
 
     try:
         response_body = video.to_json()
+        print(response_body)
         return make_response(jsonify(response_body),200)
     except:
         abort(400)

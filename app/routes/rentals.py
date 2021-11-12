@@ -25,21 +25,22 @@ def create_rental():
 
     customer = get_customer_from_id(request_body['customer_id'])
     video =  get_video_by_id(request_body['video_id'])
-    videos_checked_out_count = Rental.query.filter_by(video_id=request_body['video_id']).count()
-    available_inventory = video.total_inventory - videos_checked_out_count
+    videos_checked_out_by_customer_count = Rental.query.filter_by(customer_id=customer.id).count()
+    videos_id_checked_out_count = Rental.query.filter_by(video_id=video.id).count()
+    available_inventory = video.total_inventory - videos_id_checked_out_count
 
     if not available_inventory:   
         return make_response(error_message)
     else:
-        videos_checked_out_count += 1
+        videos_checked_out_by_customer_count += 1
         available_inventory -= 1
         due_date = datetime.utcnow() + timedelta(days=7)
 
-        new_rental = Rental(video_id=request_body['video_id'],
-                            customer_id=request_body['customer_id'],
+        new_rental = Rental(video_id=video.id,
+                            customer_id=customer.id,
                             due_date=due_date, 
                             available_inventory=available_inventory,
-                            videos_checked_out_count=videos_checked_out_count)
+                            videos_checked_out_count=videos_checked_out_by_customer_count)
 
     db.session.add(new_rental)
     db.session.commit() 
