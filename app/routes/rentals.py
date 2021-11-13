@@ -86,9 +86,7 @@ def check_in_video():
 
 @rentals_bp.route("/overdue", methods=["GET"], strict_slashes=False)
 def get_overdue_videos():
-    rentals = Rental.query.all() 
     now = datetime.now(timezone.utc)
-
     rentals_overdue = Rental.query.filter(Rental.due_date < now).all()
     response_body = []
 
