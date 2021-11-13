@@ -19,14 +19,13 @@ DATE_TODAY = datetime.utcnow() + timedelta(days=16)
 # def test_get_video_history_by_customer(client, one_checked_in_video ):
 #     response =  client.get("/rentals/1/history")
 
-def test_get_videos_overdue_is_true(client, one_checked_out_video) :
+def test_get_videos_overdue_is_true(client) :
     # Act
     response = client.get("/rentals/overdue")
     response_body = response.get_json()
 
     # Assert
     assert response.status_code == 200
-    assert response_body["due_date"] < DATE_TODAY
-    assert response_body["customer_id"]==1
-    assert response_body["videos_checked_out_count"] == 1
-    assert response_body["available_inventory"] == 0
+    assert response_body == []
+
+def test_get_videos_overdue_

@@ -90,8 +90,8 @@ def get_overdue_videos():
     now = datetime.now(timezone.utc)
 
     rentals_overdue = Rental.query.filter(Rental.due_date < now).all()
-
     response_body = []
+    
     for rental in rentals_overdue:
         response_body.append(
             { "customer_id": rental.customer_id,
@@ -100,7 +100,5 @@ def get_overdue_videos():
             "checkout_date":rental.checkout_date
             }
         )
-
-
 
     return make_response(jsonify(response_body), 200)
