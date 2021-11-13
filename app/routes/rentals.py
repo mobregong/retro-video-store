@@ -91,11 +91,17 @@ def get_overdue_videos():
 
     rentals_overdue = Rental.query.filter(Rental.due_date < now).all()
     response_body = []
-    
+
     for rental in rentals_overdue:
+        customer = get_customer_from_id(rental.customer_id)
+        video = get_video_by_id(rental.video_id)
+
         response_body.append(
-            { "customer_id": rental.customer_id,
+            {"customer_id": rental.customer_id,
             "video_id": rental.video_id,
+            "Video Title": video.title,
+            "Costumer name": customer.name,
+            "postal_code": customer.postal_code,
             "due_date":rental.due_date,
             "checkout_date":rental.checkout_date
             }
