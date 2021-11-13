@@ -9,14 +9,12 @@ class Rental(db.Model):
     # extra columns
     due_date = db.Column(db.DateTime(timezone=True),nullable=True)
     available_inventory = db.Column(db.Integer, nullable=False)
-    videos_checked_out_count = db.Column(db.Integer, nullable=True) #changed to true , if == 0 then videos_checked_out_count
-    checked_in = db.Column(db.DateTime(timezone=True), nullable=True) # else False 
-    # if checked in == date else == False 
+    videos_checked_out_count = db.Column(db.Integer, nullable=True) 
+    checked_in = db.Column(db.DateTime(timezone=True), nullable=True) 
     checkout_date = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
     def to_dict(self):
-
         return{
                 "customer_id": self.customer_id,
                 "video_id": self.video_id,

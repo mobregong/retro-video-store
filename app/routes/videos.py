@@ -103,28 +103,19 @@ def get_rentals_by_video_id(id):
 @video_bp.route("/<id>/history", methods=["GET"])
 def get_video_history(id):
     video =get_video_by_id(id)
-    rentals  = Rental.query.filter(Rental.video_id==video.id, Rental.checked_in !=None,).all()
+    rentals  = Rental.query.filter(Rental.video_id==video.id, Rental.checked_in !=None).all()
     print(rentals)
     response_body =[]
     for rental in rentals:
         customer = get_customer_from_id(rental.customer_id)
         video = get_video_by_id(rental.video_id)
-        response_body.append({"name": customer.name,
+        response_body.append({" Customer name": customer.name,
                             "video": video.title,
-                            "checked in on": rental.checked_in})
+                            "check-in date": rental.checked_in,
+                            "video_id": rental.video_id,
+                            "customer_id": rental.customer_id, 
+                            "checkout date": rental.checkout_date})
 
 
     return make_response(jsonify(response_body), 200)
 
-    #### `GET /videos/<id>/history`
-# List customers that have checked out a copy of the video _in the past_
-
-# URI parameters:
-# - `id`: Video identifier
-
-# Fields to return:
-# - `customer_id`
-# - `name`
-# - `postal_code`
-# - `checkout_date`
-# - `due_date`
