@@ -7,6 +7,7 @@ from app.routes.helper_functions import *
 rentals_bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 
 
+
 '''
 handling request, 
 is it valid?, 
@@ -18,12 +19,7 @@ returning data
 def check_out_video():
     request_body = request.get_json()
 
-    error_message = {"message": "Could not perform checkout"}, 400
-
-    if "customer_id" not in request_body or "video_id" not in request_body:
-        return make_response(error_message)
-
-
+    validate_request("checkout", request_body)
 
     customer, video = get_customer_and_video_id(request_body)
 
@@ -33,7 +29,7 @@ def check_out_video():
     available_inventory = video.total_inventory - videos_id_checked_out_count
 
     if not available_inventory:   
-        return make_response(error_message)
+        return make_response({"message": f"Could not perform checkout"},400)
     else:
         videos_checked_out_by_customer_count += 1
         available_inventory -= 1
@@ -67,8 +63,10 @@ def check_in_video():
 
     request_body = request.get_json()
 
-    if "customer_id" not in request_body or "video_id" not in request_body:
-        return make_response({"message": "Could not perform check in"}, 400)
+    # if "customer_id" not in request_body or "video_id" not in request_body:
+    #     return make_response({"message": "Could not perform check in"}, 400)
+
+    validate_request("checkin", request_body)
 
     customer, video = get_customer_and_video_id(request_body)
 

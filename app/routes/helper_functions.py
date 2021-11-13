@@ -13,6 +13,8 @@ def valid_int(number):
         response_body = 'Invalid Data'
         abort(make_response(response_body,400))
 
+
+
 def get_customer_from_id(customer_id):
     id = valid_int(customer_id)
     customer = Customer.query.filter_by(id=id).one_or_none()    
@@ -36,4 +38,6 @@ def get_customer_and_video_id(request_body):
     return customer,video
 
 
-
+def validate_request(action, request_body):
+    if "customer_id" not in request_body or "video_id" not in request_body:
+        return abort(make_response({"message": f"Could not perform {action}"}, 400))
