@@ -53,23 +53,21 @@ def read_one_video(video_id):
 def update_video(video_id): 
     video = get_video_by_id(video_id)
 
-    try:
-        request_body = request.get_json()
-        if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
-            abort(400)      
-        if "title" in request_body:
-            video.title = request_body["title"]
-        if "release_date" in request_body:
-            video.release_date = request_body["release_date"]
-        if "total_inventory" in request_body:
-            video.total_inventory = request_body["total_inventory"]
 
-        db.session.commit()
-        response_body = video.to_json()
+    request_body = request.get_json()
+    if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
+        abort(400)      
+    if "title" in request_body:
+        video.title = request_body["title"]
+    if "release_date" in request_body:
+        video.release_date = request_body["release_date"]
+    if "total_inventory" in request_body:
+        video.total_inventory = request_body["total_inventory"]
 
-        return make_response(response_body, 200)
-    except KeyError as err:
-        abort(400)
+    db.session.commit()
+    response_body = video.to_json()
+
+    return make_response(response_body, 200)
 
 
 '''DELETE - one item by id'''

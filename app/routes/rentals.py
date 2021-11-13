@@ -7,8 +7,6 @@ from app.routes.helper_functions import *
 rentals_bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 
 
-# Routes
-# Post check-out
 '''
 handling request, 
 is it valid?, 
