@@ -57,12 +57,10 @@ def update_video(video_id):
     if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
         response_body = {"message": "Invalid Data"}
         abort(make_response(response_body, 400))    
-    if "title" in request_body:
-        video.title = request_body["title"]
-    if "release_date" in request_body:
-        video.release_date = request_body["release_date"]
-    if "total_inventory" in request_body:
-        video.total_inventory = request_body["total_inventory"]
+
+    video.title = request_body["title"]
+    video.release_date = request_body["release_date"]
+    video.total_inventory = request_body["total_inventory"]
 
     db.session.commit()
     response_body = video.to_json()

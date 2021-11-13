@@ -26,7 +26,6 @@ def get_customer_from_id(customer_id):
 def get_video_by_id(video_id):
     id = valid_int(video_id)
     video = Video.query.filter_by(id=id).one_or_none()    
-
     if video is None:
         response_body = {"message": f"Video {id} was not found"}
         abort(make_response(response_body, 404))   
