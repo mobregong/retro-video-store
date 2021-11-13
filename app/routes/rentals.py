@@ -27,18 +27,18 @@ def check_out_video():
 
     if not available_inventory:   
         return make_response({"message": f"Could not perform checkout"},400)
-    else:
-        videos_checked_out_by_customer_count += 1
-        available_inventory -= 1
-        checked_out_date =datetime.utcnow() 
-        due_date = checked_out_date + timedelta(days=7)
+    
+    videos_checked_out_by_customer_count += 1
+    available_inventory -= 1
+    checked_out_date =datetime.utcnow() 
+    due_date = checked_out_date + timedelta(days=7)
 
-        new_rental = Rental(video_id=video.id,
-                            customer_id=customer.id,
-                            due_date=due_date, 
-                            available_inventory=available_inventory,
-                            videos_checked_out_count=videos_checked_out_by_customer_count,
-                            checkout_date= checked_out_date)
+    new_rental = Rental(video_id=video.id,
+                        customer_id=customer.id,
+                        due_date=due_date, 
+                        available_inventory=available_inventory,
+                        videos_checked_out_count=videos_checked_out_by_customer_count,
+                        checkout_date= checked_out_date)
 
     db.session.add(new_rental)
     db.session.commit() 

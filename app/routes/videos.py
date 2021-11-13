@@ -41,7 +41,6 @@ def read_all():
 '''GET - read one'''
 @video_bp.route("/<video_id>", methods=["GET"])
 def read_one_video(video_id):
-
     video = get_video_by_id(video_id)
     response_body = video.to_json()
     return make_response(jsonify(response_body),200)
@@ -99,6 +98,3 @@ def get_rentals_by_video_id(id):
                             "postal_code":customer.postal_code})
 
     return make_response(jsonify(response_body),200)
-
-
-
