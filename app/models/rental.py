@@ -7,7 +7,7 @@ class Rental(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), primary_key=True,nullable=False)
     video_id = db.Column(db.Integer, db.ForeignKey('video.id'), primary_key=True,nullable=False)
     # extra columns
-    due_date = db.Column(db.DateTime(timezone=True),nullable=False)
+    due_date = db.Column(db.DateTime(timezone=True),nullable=True)
     available_inventory = db.Column(db.Integer, nullable=False)
     videos_checked_out_count = db.Column(db.Integer, nullable=True) #changed to true , if == 0 then videos_checked_out_count
     checked_in = db.Column(db.DateTime(timezone=True), nullable=True) # else False 
@@ -24,7 +24,4 @@ class Rental(db.Model):
                 "available_inventory": self.available_inventory,
                 "videos_checked_out_count": self.videos_checked_out_count if self.videos_checked_out_count else False,
             }
-        if not self.checked_in:
-            return dict_rentals     
-        dict_rentals["checked_in"] = self.checked_in
         return dict_rentals

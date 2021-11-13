@@ -126,6 +126,8 @@ def get_rentals_by_video_id(id):
 
 
 
+
+
 ''' Helper Functions '''
 
 def get_video_by_id(video_id):
