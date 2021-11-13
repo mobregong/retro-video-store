@@ -23,6 +23,8 @@ def check_out_video():
     if "customer_id" not in request_body or "video_id" not in request_body:
         return make_response(error_message)
 
+
+
     customer, video = get_customer_and_video_id(request_body)
 
 

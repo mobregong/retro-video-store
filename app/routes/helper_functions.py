@@ -1,10 +1,7 @@
 from app import db
 from app.models.customer import Customer
-from flask import Blueprint, jsonify, request, make_response, abort
-from app.models.rental import Rental
+from flask import  make_response, abort
 from app.models.video import Video
-
-
 
 
 
@@ -13,7 +10,8 @@ def valid_int(number):
         id = int(number)
         return id 
     except:
-        abort(400)
+        response_body = 'Invalid Data'
+        abort(make_response(response_body,400))
 
 def get_customer_from_id(customer_id):
     id = valid_int(customer_id)

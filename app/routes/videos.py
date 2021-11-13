@@ -53,10 +53,10 @@ def read_one_video(video_id):
 def update_video(video_id): 
     video = get_video_by_id(video_id)
 
-
     request_body = request.get_json()
     if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
-        abort(400)      
+        response_body = {"message": "Invalid Data"}
+        abort(make_response(response_body, 400))    
     if "title" in request_body:
         video.title = request_body["title"]
     if "release_date" in request_body:
@@ -84,7 +84,7 @@ def delete_video(video_id):
     db.session.commit()
     response_body ={"id": video.id}
 
-    return make_response(response_body), 200
+    return make_response(response_body,200)
 
 
 @video_bp.route("/<id>/rentals", methods=["GET"])
