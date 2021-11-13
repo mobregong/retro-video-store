@@ -1,8 +1,15 @@
 from app import db
 from app.models.rental import Rental
-from flask import Blueprint,  request, make_response
-from datetime import datetime, timedelta
+from app.models.video import Video
+from flask import Blueprint,  request, make_response, jsonify
+from datetime import datetime, timedelta, timezone
 from app.routes.helper_functions import * 
+
+
+
+
+
+
 
 rentals_bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 
@@ -76,3 +83,24 @@ def check_in_video():
 
     response_body = rentals.to_dict()
     return make_response(response_body, 200)
+
+@rentals_bp.route("/overdue", methods=["GET"], strict_slashes=False)
+def get_overdue_videos():
+    rentals = Rental.query.all() 
+    now = datetime.now(timezone.utc)
+
+    rentals_overdue = Rental.query.filter(Rental.due_date < now).all()
+
+    response_body = []
+    for rental in rentals_overdue:
+        response_body.append(
+            { "customer_id": rental.customer_id,
+            "video_id": rental.video_id,
+            "due_date":rental.due_date,
+            "checkout_date":rental.checkout_date
+            }
+        )
+
+
+
+    return make_response(jsonify(response_body), 200)
