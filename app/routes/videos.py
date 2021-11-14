@@ -102,14 +102,14 @@ def get_rentals_by_video_id(id):
 
 @video_bp.route("/<id>/history", methods=["GET"])
 def get_video_history(id):
-    video =get_video_by_id(id)
+    video = get_video_by_id(id)
     rentals  = Rental.query.filter(Rental.video_id==video.id, Rental.checked_in !=None).all()
     print(rentals)
     response_body =[]
     for rental in rentals:
         customer = get_customer_from_id(rental.customer_id)
         video = get_video_by_id(rental.video_id)
-        response_body.append({" Customer name": customer.name,
+        response_body.append({"Customer name": customer.name,
                             "video": video.title,
                             "check-in date": rental.checked_in,
                             "video_id": rental.video_id,

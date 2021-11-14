@@ -62,7 +62,7 @@ def one_checked_out_video(app, client, one_customer, one_video):
     })
 
 @pytest.fixture
-def one_checked_in_video(app, client, one_customer, one_video):
+def one_checked_in_video(app, client, one_checked_out_video):
     response = client.post("/rentals/check-in", json={
         "customer_id": 1,
         "video_id": 1
