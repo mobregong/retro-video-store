@@ -1,8 +1,8 @@
-"""Create Models Rental, VIDEOS , CUSTOMERS
+"""Create videos/customers/rentals tables
 
-Revision ID: b6c96d175f46
+Revision ID: effaa0272372
 Revises: 
-Create Date: 2021-11-12 11:10:25.113817
+Create Date: 2021-11-12 21:15:23.639145
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b6c96d175f46'
+revision = 'effaa0272372'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,10 +36,11 @@ def upgrade():
     op.create_table('rental',
     sa.Column('customer_id', sa.Integer(), nullable=False),
     sa.Column('video_id', sa.Integer(), nullable=False),
-    sa.Column('due_date', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('due_date', sa.DateTime(timezone=True), nullable=True),
     sa.Column('available_inventory', sa.Integer(), nullable=False),
     sa.Column('videos_checked_out_count', sa.Integer(), nullable=True),
     sa.Column('checked_in', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('checke_out_date', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['customer_id'], ['customer.id'], ),
     sa.ForeignKeyConstraint(['video_id'], ['video.id'], ),
     sa.PrimaryKeyConstraint('customer_id', 'video_id')

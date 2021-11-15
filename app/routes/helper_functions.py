@@ -1,10 +1,7 @@
 from app import db
 from app.models.customer import Customer
-from flask import Blueprint, jsonify, request, make_response, abort
-from app.models.rental import Rental
+from flask import  make_response, abort
 from app.models.video import Video
-
-
 
 
 
@@ -13,7 +10,10 @@ def valid_int(number):
         id = int(number)
         return id 
     except:
-        abort(400)
+        response_body = 'Invalid Data'
+        abort(make_response(response_body,400))
+
+
 
 def get_customer_from_id(customer_id):
     id = valid_int(customer_id)
@@ -26,7 +26,6 @@ def get_customer_from_id(customer_id):
 def get_video_by_id(video_id):
     id = valid_int(video_id)
     video = Video.query.filter_by(id=id).one_or_none()    
-
     if video is None:
         response_body = {"message": f"Video {id} was not found"}
         abort(make_response(response_body, 404))   
@@ -38,4 +37,6 @@ def get_customer_and_video_id(request_body):
     return customer,video
 
 
-
+def validate_request(action, request_body):
+    if "customer_id" not in request_body or "video_id" not in request_body:
+        return abort(make_response({"message": f"Could not perform {action}"}, 400))

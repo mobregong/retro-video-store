@@ -17,4 +17,3 @@ class Video(db.Model):
             "total_inventory" :  self.total_inventory
         }
 
-
