@@ -36,17 +36,17 @@ def read_all():
 
     sort_videos = request.args.get("sort")
     page = request.args.get("page", 1, type=int) 
-    # set default to 1 , error_out will return an empty list when page > elements
+    # set default to 1, 
+    # error_out will return an empty list when page > elements
     response_body = []
 
     if sort_videos == "title-asc":
-        videos = Video.query.order_by(Video.title.asc()).paginate(page=page,per_page= VIDEOS_PER_PAGE,error_out=False)
+        videos = Video.query.order_by(Video.title.asc()).paginate(page=page,per_page=VIDEOS_PER_PAGE,error_out=False)
 
     elif sort_videos == "release-date-asc":
-        videos = Video.query.order_by(Video.release_date.asc()).paginate(page=page,per_page= VIDEOS_PER_PAGE,error_out=False)
-
+        videos = Video.query.order_by(Video.release_date.asc()).paginate(page=page,per_page=VIDEOS_PER_PAGE,error_out=False)
     else:
-        videos = Video.query.paginate(page=page, per_page = VIDEOS_PER_PAGE,error_out=False)
+        videos = Video.query.paginate(page=page, per_page=VIDEOS_PER_PAGE,error_out=False)
     
     for video in videos.items:
         response_body.append(video.to_json())     
@@ -65,9 +65,10 @@ def read_one_video(video_id):
 
 @video_bp.route("/<video_id>", methods=["PUT"])
 def update_video(video_id): 
-    video = get_video_by_id(video_id)
 
+    video = get_video_by_id(video_id)
     request_body = request.get_json()
+
     if not request_body or "title" not in request_body or "release_date" not in request_body or "total_inventory" not in request_body:
         response_body = {"message": "Invalid Data"}
         abort(make_response(response_body, 400))    
@@ -130,7 +131,6 @@ def get_video_history(id):
                             "video_id": rental.video_id,
                             "customer_id": rental.customer_id, 
                             "checkout date": rental.checkout_date})
-
 
     return make_response(jsonify(response_body), 200)
 
