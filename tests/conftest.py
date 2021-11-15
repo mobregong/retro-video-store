@@ -44,6 +44,19 @@ def one_video(app):
     db.session.add(new_video)
     db.session.commit()
 
+
+@pytest.fixture
+def three_video(app):
+
+    db.session.add_all([
+        Video(title=VIDEO_TITLE, release_date=VIDEO_RELEASE_DATE, total_inventory=VIDEO_INVENTORY),
+        Video(title= "A beautiful video", release_date=VIDEO_RELEASE_DATE, total_inventory=2),
+        Video(title= "Names and names", release_date=VIDEO_RELEASE_DATE, total_inventory=3),
+    ])
+    db.session.commit()
+
+
+
 @pytest.fixture
 def one_customer(app):
     new_customer = Customer(
@@ -53,6 +66,17 @@ def one_customer(app):
     )
     db.session.add(new_customer)
     db.session.commit()
+
+@pytest.fixture
+def three_customers(app):
+
+    db.session.add_all([
+        Customer(name=CUSTOMER_NAME, postal_code=CUSTOMER_POSTAL_CODE, phone=CUSTOMER_PHONE),
+        Customer(name= "Amelia Jonson", postal_code=VIDEO_RELEASE_DATE, phone=CUSTOMER_PHONE),
+        Customer(name= "Monica Seller", postal_code=VIDEO_RELEASE_DATE, phone=CUSTOMER_PHONE),
+    ])
+    db.session.commit()
+
 
 @pytest.fixture
 def one_checked_out_video(app, client, one_customer, one_video):
