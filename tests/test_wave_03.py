@@ -43,14 +43,41 @@ def test_get_video_history(client, one_checked_in_video):
 
 
 def test_get_video_history_video_not_found(client):
+    # Act
     response = client.get("/videos/1/history")
-
     response_body = response.get_json()
-
+    # Assert
     assert response.status_code == 404
     assert response_body["message"] == "Video 1 was not found"
 
-    
+''' SORTED VIDEOS'''
+
+def test_get_videos_sorted_title_asc(client, four_videos):
+    # Act
+    response = client.get("/videos?sort=title-asc")
+    response_body = response.get_json()
+    # Assert
+    assert response.status_code == 200
+    assert len(response_body) == 4
+    assert response_body[0]['title'] == "A beautiful video"
+    assert response_body[1]['title'] == "Blueprint"
+    assert response_body[2]['title'] == "Names and names"
+    assert response_body[3]['title'] == "Narnia"
+
+
+
+def test_get_videos_sorted_release_date_asc(client, four_videos):
+    # Act
+    response = client.get("/videos?sort=release-date-asc")
+    response_body = response.get_json()
+    # Assert
+    assert response.status_code == 200
+    assert len(response_body) == 4
+    assert response_body[0]['title'] == "Blueprint"
+    assert response_body[1]['title'] == "Narnia"
+    assert response_body[2]['title'] == "Names and names"
+    assert response_body[3]['title'] == "A beautiful video"
+
     
 '''CUSTOMERS '''
 
@@ -73,3 +100,4 @@ def test_get_customer_history(client, one_checked_in_video):
     assert response_body[0]["title"] == VIDEO_TITLE
     assert response_body[0]["checkout_date"] != None
     assert response_body[0]["due_date"] == None
+

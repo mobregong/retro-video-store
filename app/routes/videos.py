@@ -31,8 +31,17 @@ def add_video():
 '''Get - real all videos'''
 @video_bp.route("", methods=["GET"])
 def read_all():
-    videos = Video.query.all()
+
+    sort_videos = request.args.get("sort")
     response_body = []
+
+    if sort_videos == "title-asc":
+        videos = Video.query.order_by(Video.title.asc()).all()
+    elif sort_videos == "release-date-asc":
+        videos = Video.query.order_by(Video.release_date.asc()).all()
+    else:
+        videos = Video.query.all()
+    
     for video in videos:
         response_body.append(video.to_json())     
     return make_response(jsonify(response_body),200)

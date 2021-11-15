@@ -46,12 +46,13 @@ def one_video(app):
 
 
 @pytest.fixture
-def three_video(app):
+def four_videos(app):
 
     db.session.add_all([
-        Video(title=VIDEO_TITLE, release_date=VIDEO_RELEASE_DATE, total_inventory=VIDEO_INVENTORY),
-        Video(title= "A beautiful video", release_date=VIDEO_RELEASE_DATE, total_inventory=2),
-        Video(title= "Names and names", release_date=VIDEO_RELEASE_DATE, total_inventory=3),
+        Video(title='Narnia', release_date="01-01-2001", total_inventory=1),
+        Video(title= "A beautiful video", release_date="01-05-2021", total_inventory=2),
+        Video(title= "Names and names", release_date="07-01-2011", total_inventory=3),
+        Video(title= "Blueprint", release_date="10-10-1995", total_inventory=3),
     ])
     db.session.commit()
 
@@ -71,7 +72,7 @@ def one_customer(app):
 def three_customers(app):
 
     db.session.add_all([
-        Customer(name=CUSTOMER_NAME, postal_code=CUSTOMER_POSTAL_CODE, phone=CUSTOMER_PHONE),
+        Customer(name='Betina de Jesus', postal_code=CUSTOMER_POSTAL_CODE, phone=CUSTOMER_PHONE),
         Customer(name= "Amelia Jonson", postal_code=VIDEO_RELEASE_DATE, phone=CUSTOMER_PHONE),
         Customer(name= "Monica Seller", postal_code=VIDEO_RELEASE_DATE, phone=CUSTOMER_PHONE),
     ])
