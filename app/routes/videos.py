@@ -5,6 +5,8 @@ from app.routes.helper_functions import *
 
 video_bp = Blueprint('video', __name__, url_prefix='/videos')
 
+VIDEOS_PER_PAGE = 10
+
 
 ''' Post - create a new video'''
 @video_bp.route("", methods=["POST"])
@@ -33,16 +35,20 @@ def add_video():
 def read_all():
 
     sort_videos = request.args.get("sort")
+    page = request.args.get("page", 1, type=int) 
+    # set default to 1 , error_out will return an empty list when page > elements
     response_body = []
 
     if sort_videos == "title-asc":
-        videos = Video.query.order_by(Video.title.asc()).all()
+        videos = Video.query.order_by(Video.title.asc()).paginate(page=page,per_page= VIDEOS_PER_PAGE,error_out=False)
+
     elif sort_videos == "release-date-asc":
-        videos = Video.query.order_by(Video.release_date.asc()).all()
+        videos = Video.query.order_by(Video.release_date.asc()).paginate(page=page,per_page= VIDEOS_PER_PAGE,error_out=False)
+
     else:
-        videos = Video.query.all()
+        videos = Video.query.paginate(page=page, per_page = VIDEOS_PER_PAGE,error_out=False)
     
-    for video in videos:
+    for video in videos.items:
         response_body.append(video.to_json())     
     return make_response(jsonify(response_body),200)
 

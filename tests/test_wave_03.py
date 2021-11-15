@@ -26,7 +26,7 @@ def test_get_no_videos_overdue(client, one_checked_out_video) :
     assert response_body == []
 
 
-def test_get_video_history(client, one_checked_in_video):
+def test_get_videos_checked_out_history(client, one_checked_in_video):
     # Act
     response = client.get("/videos/1/history")
     response_body = response.get_json()
@@ -42,7 +42,7 @@ def test_get_video_history(client, one_checked_in_video):
     assert response_body[0]["check-in date"] != None
 
 
-def test_get_video_history_video_not_found(client):
+def test_get_video_checked_out_history_video_not_found(client):
     # Act
     response = client.get("/videos/1/history")
     response_body = response.get_json()
@@ -63,7 +63,6 @@ def test_get_videos_sorted_title_asc(client, four_videos):
     assert response_body[1]['title'] == "Blueprint"
     assert response_body[2]['title'] == "Names and names"
     assert response_body[3]['title'] == "Narnia"
-
 
 
 def test_get_videos_sorted_release_date_asc(client, four_videos):
