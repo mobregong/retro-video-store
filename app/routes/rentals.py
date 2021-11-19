@@ -4,13 +4,6 @@ from app.models.video import Video
 from flask import Blueprint,  request, make_response, jsonify
 from datetime import datetime, timedelta, timezone
 from app.routes.helper_functions import * 
-
-
-
-
-
-
-
 rentals_bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 
 
