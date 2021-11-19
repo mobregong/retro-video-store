@@ -17,18 +17,18 @@ def add_video():
         new_video = Video(title = request_body["title"], 
                         release_date = request_body["release_date"],
                         total_inventory = request_body["total_inventory"])
-
-        db.session.add(new_video)
-        db.session.commit()
-        response_body = {"title": new_video.title,
+    except KeyError as err:
+        response_body = {"details": f"Request body must include {err.args[0]}."}
+        return make_response(response_body, 400) 
+        
+    db.session.add(new_video)
+    db.session.commit()
+    response_body = {"title": new_video.title,
                         "id": new_video.id,
                         "release_date": new_video.release_date,
                         "total_inventory": new_video.total_inventory}
 
-        return make_response(jsonify(response_body),201)
-    except KeyError as err:
-        response_body = {"details": f"Request body must include {err.args[0]}."}
-        return make_response(response_body, 400) 
+    return make_response(jsonify(response_body),201)
 
 '''Get - real all videos'''
 @video_bp.route("", methods=["GET"])
